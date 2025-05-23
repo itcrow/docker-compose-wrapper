@@ -1,4 +1,4 @@
-module github.com/batishchev/docker-manager
+module github.com/itcrow/docker-compose-wrapper
 
 go 1.21
 

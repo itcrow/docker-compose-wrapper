@@ -10,10 +10,10 @@ import (
 	"sort"
 	"strings"
 
-	tplt "github.com/batishchev/docker-manager/internal/template"
+	tplt "github.com/itcrow/docker-compose-wrapper/internal/template"
 
-	"github.com/batishchev/docker-manager/internal/chart"
-	"github.com/batishchev/docker-manager/internal/values"
+	"github.com/itcrow/docker-compose-wrapper/internal/chart"
+	"github.com/itcrow/docker-compose-wrapper/internal/values"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
