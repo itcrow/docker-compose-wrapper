@@ -1,0 +1,27 @@
+# DEBUG: {{ .Values.environment }}
+# DEBUG KEYS: {{ .Values.environment.keys }}
+
+services:
+  database:
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    {{- if .Values.global.network.alias }}
+    networks:
+      - "{{ .Values.global.network.alias }}"
+    {{- end }}
+    environment:
+    {{- range $key, $value := .Values.environment }}
+      {{ $key }}: {{ $value }}
+    {{- end }}
+
+volumes:
+  postgres_data:
+    driver: local
+
+{{- if .Values.global.network.alias }}
+networks:
+  {{ .Values.global.network.alias }}:
+    external: true
+    name: "{{ .Values.global.network.name }}"
+{{- end }} 

@@ -1,0 +1,8 @@
+image:
+  repository: "postgres"
+  tag: "15-alpine"
+volumeSize: "10Gi"
+environment:
+  POSTGRES_DB: "mySuperApp"
+  POSTGRES_PASSWORD: "mySuperApp"
+  POSTGRES_USER: "mySuperApp" 

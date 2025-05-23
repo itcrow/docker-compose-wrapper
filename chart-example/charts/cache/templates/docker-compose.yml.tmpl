@@ -1,0 +1,16 @@
+services:
+  cache:
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    ports:
+      - "{{ .Values.port }}:6379"
+    {{- if .Values.global.network.alias }}
+    networks:
+      - "{{ .Values.global.network.alias }}"
+    {{- end }}
+
+{{- if .Values.global.network.alias }}
+networks:
+  {{ .Values.global.network.alias }}:
+    external: true
+    name: "{{ .Values.global.network.name }}"
+{{- end }} 

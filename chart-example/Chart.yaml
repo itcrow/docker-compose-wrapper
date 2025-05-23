@@ -1,0 +1,8 @@
+name: example
+version: 1.0.0
+dependencies:
+  - name: database
+    path: ./charts/database
+  - name: cache
+    path: ./charts/cache
+

@@ -1,0 +1,16 @@
+# Ignore Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store 
+dist/

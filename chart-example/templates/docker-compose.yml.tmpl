@@ -1,0 +1,22 @@
+
+services:
+  web:
+    image: {{ .image.repository }}:{{ .image.tag }}
+    ports:
+      - "{{ .appPort }}:8080"
+    environment:
+      - ENVIRONMENT={{ .global.environment }}
+      - DB_HOST=database
+      - REDIS_HOST=cache
+    {{- if .global.network.alias }}
+    networks:
+      - {{ .global.network.alias }}
+    {{- end }}
+
+{{- if .global.network.alias }}
+networks:
+  {{ .global.network.alias }}:
+    driver: {{ .global.network.driver }}
+    name: {{ .global.network.name }}
+    external: true
+{{- end }} 
