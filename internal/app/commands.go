@@ -397,7 +397,7 @@ func NewRootCommand() *cobra.Command {
 			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
 
 			// Змінюємо поточну директорію на директорію з docker-compose файлами
-			if err := os.Chdir(chartsDir); err != nil {
+			if err := os.Chdir(filepath.Join(versionDir, "docker")); err != nil {
 				return fmt.Errorf("failed to change to docker directory: %w", err)
 			}
 
@@ -1170,7 +1170,7 @@ func NewUpCommand() *cobra.Command {
 			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
 
 			// Змінюємо поточну директорію на директорію з docker-compose файлами
-			if err := os.Chdir(dockerDir); err != nil {
+			if err := os.Chdir(filepath.Join(versionDir, "docker")); err != nil {
 				return fmt.Errorf("failed to change to docker directory: %w", err)
 			}
 
