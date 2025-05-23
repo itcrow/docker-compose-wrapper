@@ -137,6 +137,9 @@ func NewRootCommand() *cobra.Command {
 
 			// Create output directory
 			distDir := filepath.Join(workDir, "dist")
+			if err := os.MkdirAll(distDir, 0755); err != nil {
+				return fmt.Errorf("failed to create dist directory: %w", err)
+			}
 			var versionDirs []struct {
 				name    string
 				version int
@@ -933,6 +936,9 @@ func NewUpCommand() *cobra.Command {
 
 			// Create output directory
 			distDir := filepath.Join(workDir, "dist")
+			if err := os.MkdirAll(distDir, 0755); err != nil {
+				return fmt.Errorf("failed to create dist directory: %w", err)
+			}
 			var versionDirs []struct {
 				name    string
 				version int
