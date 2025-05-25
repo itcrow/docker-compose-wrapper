@@ -14,6 +14,12 @@ type RollingUpdateConfig struct {
 	Replicas int
 }
 
+// Global rolling update configuration
+var (
+	RollingUpdateRetryCount    = 5 // Number of retries to wait for new containers
+	RollingUpdateRetryInterval = 5 // Seconds to wait between retries
+)
+
 // GetMainServiceName returns the name of the main service from docker-compose.yml
 func GetMainServiceName() (string, error) {
 	services, err := GetServiceList()
@@ -66,8 +72,8 @@ func GetRollingUpdateConfig(values map[string]interface{}, serviceName string) R
 
 // GetServiceContainers returns list of container IDs for a specific service
 func GetServiceContainers(serviceName string) ([]string, error) {
-	// Use exact name match with ^ and $ to prevent partial matches
-	cmd := exec.Command("docker", "ps", "-q", "-f", fmt.Sprintf("name=^%s$", serviceName))
+	// Use docker- prefix for Docker Compose containers
+	cmd := exec.Command("docker", "ps", "-q", "-f", fmt.Sprintf("name=^docker-%s-[0-9]+$", serviceName))
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get containers: %w", err)
@@ -89,6 +95,33 @@ func PerformRollingUpdate(serviceName string, config RollingUpdateConfig) error 
 		return fmt.Errorf("failed to get current containers: %w", err)
 	}
 
+	// First ensure we have the correct number of replicas
+	if len(currentContainers) != config.Replicas {
+		fmt.Printf("Scaling service %s to %d replicas before update\n", serviceName, config.Replicas)
+		scaleCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps",
+			"--scale", fmt.Sprintf("%s=%d", serviceName, config.Replicas),
+			"--no-recreate", serviceName)
+		scaleCmd.Stdout = os.Stdout
+		scaleCmd.Stderr = os.Stderr
+		if err := scaleCmd.Run(); err != nil {
+			return fmt.Errorf("failed to scale to correct replica count: %w", err)
+		}
+
+		// Wait for scaling to complete
+		time.Sleep(time.Duration(RollingUpdateRetryInterval) * time.Second)
+
+		// Get updated container list
+		currentContainers, err = GetServiceContainers(serviceName)
+		if err != nil {
+			return fmt.Errorf("failed to get containers after scaling: %w", err)
+		}
+
+		if len(currentContainers) != config.Replicas {
+			return fmt.Errorf("failed to scale to correct replica count: got %d, want %d",
+				len(currentContainers), config.Replicas)
+		}
+	}
+
 	// Scale up to double replicas
 	scaleUpCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps",
 		"--scale", fmt.Sprintf("%s=%d", serviceName, config.Replicas*2),
@@ -99,13 +132,46 @@ func PerformRollingUpdate(serviceName string, config RollingUpdateConfig) error 
 		return fmt.Errorf("failed to scale up: %w", err)
 	}
 
-	// Wait for new containers to start
-	time.Sleep(10 * time.Second)
+	// Wait for new containers with retries
+	var newContainers []string
+	for i := 0; i < RollingUpdateRetryCount; i++ {
+		// Wait before checking
+		time.Sleep(time.Duration(RollingUpdateRetryInterval) * time.Second)
 
-	// Verify that new containers are running
-	_, err = GetServiceContainers(serviceName)
-	if err != nil {
-		return fmt.Errorf("failed to verify new containers: %w", err)
+		// Get all containers after scale up
+		allContainers, err := GetServiceContainers(serviceName)
+		if err != nil {
+			return fmt.Errorf("failed to get containers after scale up: %w", err)
+		}
+
+		// Find new containers by comparing with current containers
+		newContainers = make([]string, 0)
+		for _, container := range allContainers {
+			isNew := true
+			for _, oldContainer := range currentContainers {
+				if container == oldContainer {
+					isNew = false
+					break
+				}
+			}
+			if isNew {
+				newContainers = append(newContainers, container)
+			}
+		}
+
+		// Check if we have enough new containers
+		if len(newContainers) >= config.Replicas {
+			break
+		}
+
+		fmt.Printf("Attempt %d/%d: Waiting for new containers. Found %d/%d new containers\n",
+			i+1, RollingUpdateRetryCount, len(newContainers), config.Replicas)
+	}
+
+	// Final check for new containers
+	if len(newContainers) < config.Replicas {
+		return fmt.Errorf("not enough new containers started after %d attempts: got %d, want %d",
+			RollingUpdateRetryCount, len(newContainers), config.Replicas)
 	}
 
 	// Remove old containers

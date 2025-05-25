@@ -11,7 +11,7 @@ global:
 
 appName: "web"  # обов'язково вказується для основного чарту, повинно спывпадати з ім'ям сервісу в docker-compose.yml
 rolling-update: true
-replicas: 2
+replicas: 1
 image:
   repository: "jmalloc/echo-server"
   tag: "v0.3.7"
@@ -37,5 +37,5 @@ web2:
   image:
     repository: "jmalloc/echo-server"
     tag: "v0.3.7"
-  replicas: 3
+  replicas: 1
   rolling-update: true

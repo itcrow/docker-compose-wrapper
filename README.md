@@ -428,3 +428,36 @@ You can configure rolling updates at two levels:
    ```
 
 The `appName` field in the root configuration determines which service is considered the main service. This service will use the root-level rolling update configuration. The value of `appName` and service name in docker-compose.yml.tmpl from root chart must be same.
+
+## Rolling Update Configuration
+
+Rolling updates can be configured at both global and service levels:
+
+```yaml
+# Global configuration (applies to main service)
+rolling-update: true
+replicas: 2
+
+# Service-specific configuration
+web2:
+  rolling-update: true
+  replicas: 1
+```
+
+### Rolling Update Behavior
+
+1. **Pre-update Check**:
+   - Verifies current replica count
+   - Scales to configured replica count if needed
+
+2. **Update Process**:
+   - Scales up to double the configured replicas
+   - Waits for new containers to start (configurable retries)
+   - Gracefully terminates old containers
+   - Scales back to original replica count
+
+3. **Configuration Options**:
+   ```go
+   RollingUpdateRetryCount    = 5    // Number of retries to wait for new containers
+   RollingUpdateRetryInterval = 5    // Seconds to wait between retries
+   ```
