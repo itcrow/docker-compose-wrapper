@@ -1,5 +1,5 @@
 version: "1.3.0"
-Global:
+global:
   projectName: "mySuperApp"
   environment: "production"
   defaultImagePullPolicy: "IfNotPresent"
@@ -9,8 +9,9 @@ Global:
     driver: "bridge"
 
 
-appName: "myWebApp"
-appPort: 8081
+appName: "web"  # обов'язково вказується для основного чарту, повинно спывпадати з ім'ям сервісу в docker-compose.yml
+rolling-update: true
+replicas: 2
 image:
   repository: "jmalloc/echo-server"
   tag: "v0.3.7"
@@ -31,3 +32,10 @@ cache:
     repository: "valkey/valkey"
     tag: "8-alpine"
   port: 6379 
+
+web2:
+  image:
+    repository: "jmalloc/echo-server"
+    tag: "v0.3.7"
+  replicas: 3
+  rolling-update: true

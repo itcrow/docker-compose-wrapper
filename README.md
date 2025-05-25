@@ -17,6 +17,8 @@ A powerful wrapper for Docker Compose that provides template-based configuration
 - **Transparent Docker Compose command passing**
 - **Configuration validation (lint)**
 - **Pre and post hooks** for running commands or containers
+- **Rolling updates** with zero-downtime deployment support
+- **Service-specific configuration** for replicas and update strategies
 
 ## Directory Structure
 
@@ -99,7 +101,7 @@ Lists all available releases with their timestamps.
 ```
 
 ### Rollback
-Creates a new release from a previous one and runs Docker Compose from it.
+Creates a new release from a previous one and runs Docker Compose from it. Supports rolling updates if configured in the target release.
 
 - Roll back to the previous release:
   ```
@@ -109,6 +111,12 @@ Creates a new release from a previous one and runs Docker Compose from it.
   ```
   ./compose-wrapper rollback v3-abcdef12 up -d
   ```
+
+When rolling back, the wrapper will:
+1. Create a new release from the selected version
+2. Preserve all configuration including rolling update settings
+3. Apply rolling updates if enabled in the target release's configuration
+4. Use the same zero-downtime update process as regular deployments
 
 ## Output Example
 
@@ -204,6 +212,8 @@ dependencies:
   - name: cache
     repository: https://charts.your-org.com
     version: 1.2.3
+  - name: web2
+    path: ./charts/web2
 ```
 
 ### Repository Types
@@ -367,4 +377,54 @@ Example usage:
 LOG_LEVEL=debug ./compose-wrapper up
 ```
 
-All debug and info messages (such as dependency updates, hook execution, and internal steps) are logged via slog. Only the release status and summary are printed to the console via `fmt` for clear user feedback. # docker-compose-wrapper
+All debug and info messages (such as dependency updates, hook execution, and internal steps) are logged via slog. Only the release status and summary are printed to the console via `fmt` for clear user feedback.
+
+## Rolling Updates
+
+The wrapper supports zero-downtime rolling updates for services. This is configured in the `values.yaml` file:
+
+```yaml
+# For main service
+appName: "web"  # Must match the service name in docker-compose.yml
+rolling-update: true
+replicas: 2
+
+# For other services
+web2:
+  rolling-update: true
+  replicas: 3
+```
+
+### How Rolling Updates Work
+
+1. The service is scaled up to double the desired replicas
+2. New containers are started with the updated configuration
+3. Old containers are gracefully terminated (SIGTERM)
+4. The service is scaled back to the desired number of replicas
+
+### Container Name Matching
+
+The wrapper uses exact container name matching to prevent unintended container updates. This means:
+- Services with similar names (e.g., "web" and "web2") are updated independently
+- Each service's containers are identified by their exact name
+- No risk of accidentally updating containers from other services
+
+### Rolling Update Configuration
+
+You can configure rolling updates at two levels:
+
+1. **Root Level** (applies to main service):
+   ```yaml
+   appName: "web"
+   rolling-update: true
+   replicas: 2
+   ```
+
+2. **Service Level** (applies to specific services):
+   ```yaml
+   web2:
+     rolling-update: true
+     replicas: 3
+   ```
+
+The `appName` field in the root configuration determines which service is considered the main service. This service will use the root-level rolling update configuration. The value of `appName` and service name in docker-compose.yml.tmpl from root chart must be same.

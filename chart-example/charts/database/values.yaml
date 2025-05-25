@@ -6,3 +6,4 @@ environment:
   POSTGRES_DB: "mySuperApp"
   POSTGRES_PASSWORD: "mySuperApp"
   POSTGRES_USER: "mySuperApp" 
+rolling-update: false

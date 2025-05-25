@@ -287,7 +287,8 @@ func NewRootCommand() *cobra.Command {
 					// Створюємо контекст для шаблону
 					chartValues, ok := mergedValues[chartName].(map[string]interface{})
 					if !ok {
-						return fmt.Errorf("invalid values type for child chart %s", chartName)
+						// If chart values don't exist, create an empty map
+						chartValues = make(map[string]interface{})
 					}
 
 					// Рекурсивно об'єднуємо значення
@@ -329,9 +330,7 @@ func NewRootCommand() *cobra.Command {
 					fmt.Printf("%s\n", string(valuesYaml))
 
 					// Створюємо контекст для шаблону з правильним шляхом до значень
-					templateContext := map[string]interface{}{
-						"Values": mergedChartValues,
-					}
+					templateContext := mergedChartValues
 
 					chartContent, err := renderTemplate(chartTemplate, templateContext)
 					if err != nil {
@@ -414,20 +413,41 @@ func NewRootCommand() *cobra.Command {
 				}
 			}
 			composeArgs = append(composeArgs, filteredArgs...)
-			if force {
-				// Додаємо --force-recreate як аргумент для команди up
-				for i, arg := range composeArgs {
-					if arg == "up" {
-						composeArgs = append(composeArgs[:i+1], append([]string{"--force-recreate"}, composeArgs[i+1:]...)...)
-						break
+
+			// Check if we need to perform rolling update
+			if len(filteredArgs) > 0 && filteredArgs[0] == "up" {
+				// Check if any service has rolling update enabled
+				if HasRollingUpdateEnabled(mergedValues) {
+					// Get list of services from docker-compose.yml
+					servicesCmd := exec.Command("docker", "compose", "config", "--services")
+					servicesOutput, err := servicesCmd.Output()
+					if err != nil {
+						return fmt.Errorf("failed to get services list: %w", err)
+					}
+
+					services := strings.Split(strings.TrimSpace(string(servicesOutput)), "\n")
+					for _, service := range services {
+						if err := UpdateService(service, mergedValues); err != nil {
+							return fmt.Errorf("failed to update service %s: %w", service, err)
+						}
+					}
+				} else {
+					// No rolling update needed, use regular docker compose
+					composeCmd := exec.Command("docker", composeArgs...)
+					composeCmd.Stdout = os.Stdout
+					composeCmd.Stderr = os.Stderr
+					if err := composeCmd.Run(); err != nil {
+						return fmt.Errorf("docker compose failed: %w", err)
 					}
 				}
-			}
-			composeCmd := exec.Command("docker", composeArgs...)
-			composeCmd.Stdout = os.Stdout
-			composeCmd.Stderr = os.Stderr
-			if err := composeCmd.Run(); err != nil {
-				return fmt.Errorf("docker compose failed: %w", err)
+			} else {
+				// Regular docker compose command
+				composeCmd := exec.Command("docker", composeArgs...)
+				composeCmd.Stdout = os.Stdout
+				composeCmd.Stderr = os.Stderr
+				if err := composeCmd.Run(); err != nil {
+					return fmt.Errorf("docker compose failed: %w", err)
+				}
 			}
 
 			logger.Debug("running post-hooks")
@@ -1063,7 +1083,8 @@ func NewUpCommand() *cobra.Command {
 					// Створюємо контекст для шаблону
 					chartValues, ok := mergedValues[chartName].(map[string]interface{})
 					if !ok {
-						return fmt.Errorf("invalid values type for child chart %s", chartName)
+						// If chart values don't exist, create an empty map
+						chartValues = make(map[string]interface{})
 					}
 
 					// Рекурсивно об'єднуємо значення
@@ -1105,9 +1126,7 @@ func NewUpCommand() *cobra.Command {
 					fmt.Printf("%s\n", string(valuesYaml))
 
 					// Створюємо контекст для шаблону з правильним шляхом до значень
-					templateContext := map[string]interface{}{
-						"Values": mergedChartValues,
-					}
+					templateContext := mergedChartValues
 
 					chartContent, err := renderTemplate(chartTemplate, templateContext)
 					if err != nil {
@@ -1190,20 +1209,41 @@ func NewUpCommand() *cobra.Command {
 				}
 			}
 			composeArgs = append(composeArgs, filteredArgs...)
-			if force {
-				// Додаємо --force-recreate як аргумент для команди up
-				for i, arg := range composeArgs {
-					if arg == "up" {
-						composeArgs = append(composeArgs[:i+1], append([]string{"--force-recreate"}, composeArgs[i+1:]...)...)
-						break
+
+			// Check if we need to perform rolling update
+			if len(filteredArgs) > 0 && filteredArgs[0] == "up" {
+				// Check if any service has rolling update enabled
+				if HasRollingUpdateEnabled(mergedValues) {
+					// Get list of services from docker-compose.yml
+					servicesCmd := exec.Command("docker", "compose", "config", "--services")
+					servicesOutput, err := servicesCmd.Output()
+					if err != nil {
+						return fmt.Errorf("failed to get services list: %w", err)
+					}
+
+					services := strings.Split(strings.TrimSpace(string(servicesOutput)), "\n")
+					for _, service := range services {
+						if err := UpdateService(service, mergedValues); err != nil {
+							return fmt.Errorf("failed to update service %s: %w", service, err)
+						}
+					}
+				} else {
+					// No rolling update needed, use regular docker compose
+					composeCmd := exec.Command("docker", composeArgs...)
+					composeCmd.Stdout = os.Stdout
+					composeCmd.Stderr = os.Stderr
+					if err := composeCmd.Run(); err != nil {
+						return fmt.Errorf("docker compose failed: %w", err)
 					}
 				}
-			}
-			composeCmd := exec.Command("docker", composeArgs...)
-			composeCmd.Stdout = os.Stdout
-			composeCmd.Stderr = os.Stderr
-			if err := composeCmd.Run(); err != nil {
-				return fmt.Errorf("docker compose failed: %w", err)
+			} else {
+				// Regular docker compose command
+				composeCmd := exec.Command("docker", composeArgs...)
+				composeCmd.Stdout = os.Stdout
+				composeCmd.Stderr = os.Stderr
+				if err := composeCmd.Run(); err != nil {
+					return fmt.Errorf("docker compose failed: %w", err)
+				}
 			}
 
 			logger.Debug("running post-hooks")
