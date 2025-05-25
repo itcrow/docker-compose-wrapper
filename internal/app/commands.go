@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
@@ -395,12 +396,20 @@ func NewRootCommand() *cobra.Command {
 				composeFiles = append(composeFiles, chartComposeFile)
 			}
 
-			// Встановлюємо змінну середовища
-			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
-
 			// Змінюємо поточну директорію на директорію з docker-compose файлами
 			if err := os.Chdir(filepath.Join(versionDir, "docker")); err != nil {
 				return fmt.Errorf("failed to change to docker directory: %w", err)
+			}
+
+			// Встановлюємо змінні середовища
+			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
+
+			// Встановлюємо COMPOSE_PROJECT_NAME з global.projectName
+			if global, ok := mergedValues["global"].(map[string]interface{}); ok {
+				if projectName, ok := global["projectName"].(string); ok {
+					// Convert project name to lowercase to comply with Docker Compose requirements
+					os.Setenv("COMPOSE_PROJECT_NAME", strings.ToLower(projectName))
+				}
 			}
 
 			// Запускаємо docker compose
@@ -420,12 +429,18 @@ func NewRootCommand() *cobra.Command {
 				if HasRollingUpdateEnabled(mergedValues) {
 					// Get list of services from docker-compose.yml
 					servicesCmd := exec.Command("docker", "compose", "config", "--services")
+					var stderr bytes.Buffer
+					servicesCmd.Stderr = &stderr
 					servicesOutput, err := servicesCmd.Output()
 					if err != nil {
-						return fmt.Errorf("failed to get services list: %w", err)
+						return fmt.Errorf("failed to get services list: %w\nError output: %s", err, stderr.String())
 					}
 
 					services := strings.Split(strings.TrimSpace(string(servicesOutput)), "\n")
+					if len(services) == 0 {
+						return fmt.Errorf("no services found in docker-compose configuration")
+					}
+
 					for _, service := range services {
 						if err := UpdateService(service, mergedValues); err != nil {
 							return fmt.Errorf("failed to update service %s: %w", service, err)
@@ -1191,12 +1206,20 @@ func NewUpCommand() *cobra.Command {
 				composeFiles = append(composeFiles, chartComposeFile)
 			}
 
-			// Встановлюємо змінну середовища
-			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
-
 			// Змінюємо поточну директорію на директорію з docker-compose файлами
 			if err := os.Chdir(filepath.Join(versionDir, "docker")); err != nil {
 				return fmt.Errorf("failed to change to docker directory: %w", err)
+			}
+
+			// Встановлюємо змінні середовища
+			os.Setenv("COMPOSE_FILE", strings.Join(composeFiles, ":"))
+
+			// Встановлюємо COMPOSE_PROJECT_NAME з global.projectName
+			if global, ok := mergedValues["global"].(map[string]interface{}); ok {
+				if projectName, ok := global["projectName"].(string); ok {
+					// Convert project name to lowercase to comply with Docker Compose requirements
+					os.Setenv("COMPOSE_PROJECT_NAME", strings.ToLower(projectName))
+				}
 			}
 
 			// Запускаємо docker compose
@@ -1216,12 +1239,18 @@ func NewUpCommand() *cobra.Command {
 				if HasRollingUpdateEnabled(mergedValues) {
 					// Get list of services from docker-compose.yml
 					servicesCmd := exec.Command("docker", "compose", "config", "--services")
+					var stderr bytes.Buffer
+					servicesCmd.Stderr = &stderr
 					servicesOutput, err := servicesCmd.Output()
 					if err != nil {
-						return fmt.Errorf("failed to get services list: %w", err)
+						return fmt.Errorf("failed to get services list: %w\nError output: %s", err, stderr.String())
 					}
 
 					services := strings.Split(strings.TrimSpace(string(servicesOutput)), "\n")
+					if len(services) == 0 {
+						return fmt.Errorf("no services found in docker-compose configuration")
+					}
+
 					for _, service := range services {
 						if err := UpdateService(service, mergedValues); err != nil {
 							return fmt.Errorf("failed to update service %s: %w", service, err)

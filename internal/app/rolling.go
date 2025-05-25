@@ -14,6 +14,12 @@ type RollingUpdateConfig struct {
 	Replicas int
 }
 
+// Global rolling update configuration
+var (
+	RollingUpdateRetryCount    = 5 // Number of retries to wait for new containers
+	RollingUpdateRetryInterval = 5 // Seconds to wait between retries
+)
+
 // GetMainServiceName returns the name of the main service from docker-compose.yml
 func GetMainServiceName() (string, error) {
 	services, err := GetServiceList()
@@ -65,9 +71,17 @@ func GetRollingUpdateConfig(values map[string]interface{}, serviceName string) R
 }
 
 // GetServiceContainers returns list of container IDs for a specific service
-func GetServiceContainers(serviceName string) ([]string, error) {
-	// Use exact name match with ^ and $ to prevent partial matches
-	cmd := exec.Command("docker", "ps", "-q", "-f", fmt.Sprintf("name=^%s$", serviceName))
+func GetServiceContainers(serviceName string, values map[string]interface{}) ([]string, error) {
+	// Get project name from global.projectName
+	projectName := "docker" // default fallback
+	if global, ok := values["global"].(map[string]interface{}); ok {
+		if name, ok := global["projectName"].(string); ok {
+			projectName = strings.ToLower(name)
+		}
+	}
+
+	// Use project name prefix for Docker Compose containers
+	cmd := exec.Command("docker", "ps", "-q", "-f", fmt.Sprintf("name=^%s-%s-[0-9]+$", projectName, serviceName))
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get containers: %w", err)
@@ -82,62 +96,89 @@ func GetServiceContainers(serviceName string) ([]string, error) {
 }
 
 // PerformRollingUpdate performs rolling update for a service
-func PerformRollingUpdate(serviceName string, config RollingUpdateConfig) error {
+func PerformRollingUpdate(serviceName string, config RollingUpdateConfig, mergedValues map[string]interface{}) error {
+	// First, ensure the service is started
+	startCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps", serviceName)
+	startCmd.Stdout = os.Stdout
+	startCmd.Stderr = os.Stderr
+	if err := startCmd.Run(); err != nil {
+		return fmt.Errorf("failed to start service %s: %w", serviceName, err)
+	}
+
 	// Get current containers
-	currentContainers, err := GetServiceContainers(serviceName)
+	currentContainers, err := GetServiceContainers(serviceName, mergedValues)
 	if err != nil {
 		return fmt.Errorf("failed to get current containers: %w", err)
 	}
 
-	// Scale up to double replicas
-	scaleUpCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps",
-		"--scale", fmt.Sprintf("%s=%d", serviceName, config.Replicas*2),
-		"--no-recreate", serviceName)
+	// Scale up to double the replicas
+	doubleReplicas := config.Replicas * 2
+	scaleUpCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps", "--scale", fmt.Sprintf("%s=%d", serviceName, doubleReplicas), "--no-recreate", serviceName)
 	scaleUpCmd.Stdout = os.Stdout
 	scaleUpCmd.Stderr = os.Stderr
 	if err := scaleUpCmd.Run(); err != nil {
-		return fmt.Errorf("failed to scale up: %w", err)
+		return fmt.Errorf("failed to scale up service: %w", err)
 	}
 
 	// Wait for new containers to start
-	time.Sleep(10 * time.Second)
+	var newContainers []string
+	for i := 0; i < RollingUpdateRetryCount; i++ {
+		fmt.Printf("Waiting for new containers (attempt %d/%d)...\n", i+1, RollingUpdateRetryCount)
+		time.Sleep(time.Duration(RollingUpdateRetryInterval) * time.Second)
 
-	// Verify that new containers are running
-	_, err = GetServiceContainers(serviceName)
-	if err != nil {
-		return fmt.Errorf("failed to verify new containers: %w", err)
+		// Get all containers after scaling
+		allContainers, err := GetServiceContainers(serviceName, mergedValues)
+		if err != nil {
+			return fmt.Errorf("failed to get containers after scaling: %w", err)
+		}
+
+		// Find new containers by comparing with current containers
+		newContainers = make([]string, 0)
+		for _, container := range allContainers {
+			isNew := true
+			for _, current := range currentContainers {
+				if container == current {
+					isNew = false
+					break
+				}
+			}
+			if isNew {
+				newContainers = append(newContainers, container)
+			}
+		}
+
+		if len(newContainers) >= config.Replicas {
+			break
+		}
+	}
+
+	if len(newContainers) < config.Replicas {
+		return fmt.Errorf("not enough new containers started after %d attempts: got %d, want %d", RollingUpdateRetryCount, len(newContainers), config.Replicas)
 	}
 
 	// Remove old containers
 	for _, container := range currentContainers {
-		// Send SIGTERM
-		killCmd := exec.Command("docker", "kill", "-s", "SIGTERM", container)
-		killCmd.Stdout = os.Stdout
-		killCmd.Stderr = os.Stderr
-		if err := killCmd.Run(); err != nil {
-			fmt.Printf("Warning: failed to kill container %s: %v\n", container, err)
+		stopCmd := exec.Command("docker", "stop", container)
+		stopCmd.Stdout = os.Stdout
+		stopCmd.Stderr = os.Stderr
+		if err := stopCmd.Run(); err != nil {
+			return fmt.Errorf("failed to stop container %s: %w", container, err)
 		}
 
-		// Wait a bit
-		time.Sleep(time.Second)
-
-		// Remove container
-		rmCmd := exec.Command("docker", "rm", "-f", container)
+		rmCmd := exec.Command("docker", "rm", container)
 		rmCmd.Stdout = os.Stdout
 		rmCmd.Stderr = os.Stderr
 		if err := rmCmd.Run(); err != nil {
-			fmt.Printf("Warning: failed to remove container %s: %v\n", container, err)
+			return fmt.Errorf("failed to remove container %s: %w", container, err)
 		}
 	}
 
-	// Scale back to original replicas
-	scaleDownCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps",
-		"--scale", fmt.Sprintf("%s=%d", serviceName, config.Replicas),
-		"--no-recreate", serviceName)
+	// Scale back down to original replicas
+	scaleDownCmd := exec.Command("docker", "compose", "up", "-d", "--no-deps", "--scale", fmt.Sprintf("%s=%d", serviceName, config.Replicas), "--no-recreate", serviceName)
 	scaleDownCmd.Stdout = os.Stdout
 	scaleDownCmd.Stderr = os.Stderr
 	if err := scaleDownCmd.Run(); err != nil {
-		return fmt.Errorf("failed to scale down: %w", err)
+		return fmt.Errorf("failed to scale down service: %w", err)
 	}
 
 	return nil
@@ -179,7 +220,7 @@ func UpdateService(serviceName string, values map[string]interface{}) error {
 
 	if config.Enabled {
 		fmt.Printf("Performing rolling update for service %s\n", serviceName)
-		return PerformRollingUpdate(serviceName, config)
+		return PerformRollingUpdate(serviceName, config, values)
 	}
 
 	// Regular update without rolling update
