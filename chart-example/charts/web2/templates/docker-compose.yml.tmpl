@@ -1,6 +1,6 @@
 
 services:
-  web:
+  web2:
     image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
     environment:
       - ENVIRONMENT={{ .Values.global.environment }}

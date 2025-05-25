@@ -33,6 +33,19 @@ func (r *Renderer) RenderTemplate(templatePath string, values map[string]interfa
 		return "", fmt.Errorf("failed to parse template: %w", err)
 	}
 
+	// Check if values already has a Values key
+	if _, ok := values["Values"]; !ok {
+		// Wrap values in a struct with a Values field
+		templateData := struct {
+			Values map[string]interface{}
+		}{
+			Values: values,
+		}
+		values = map[string]interface{}{
+			"Values": templateData.Values,
+		}
+	}
+
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, values); err != nil {
 		return "", fmt.Errorf("failed to execute template: %w", err)

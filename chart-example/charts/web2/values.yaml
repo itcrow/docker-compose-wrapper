@@ -1,0 +1,6 @@
+appPort: 8081
+rolling-update: true
+replicas: 3
+image:
+  repository: "jmalloc/echo-server"
+  tag: "v0.3.7"

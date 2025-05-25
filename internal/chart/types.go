@@ -16,7 +16,7 @@ type Dependency struct {
 // Values represents the configuration values
 type Values struct {
 	Version string                 `yaml:"version"`
-	Global  GlobalValues           `yaml:"Global"`
+	Global  GlobalValues           `yaml:"global"`
 	Values  map[string]interface{} `yaml:",inline"`
 }
 
@@ -34,4 +34,3 @@ type NetworkValues struct {
 	Alias  string `yaml:"alias"`
 	Driver string `yaml:"driver"`
 }
- 

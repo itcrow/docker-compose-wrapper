@@ -3,3 +3,5 @@ image:
   tag: "7-alpine"
 port: 63791 
 
+
+rolling-update: false
