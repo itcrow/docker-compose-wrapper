@@ -1,4 +1,4 @@
-module github.com/itcrow/docker-compose-wrapper
+module github.com/your-server-support/docker-compose-wrapper
 
 go 1.21
 

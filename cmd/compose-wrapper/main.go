@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/itcrow/docker-compose-wrapper/internal/app"
+	"github.com/your-server-support/docker-compose-wrapper/internal/app"
 )
 
 func main() {
