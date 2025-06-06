@@ -24,7 +24,7 @@ database:
   volumeSize: "10Gi"
   environment:
     POSTGRES_PASSWORD: "mySuperApp1"
-    POSTGRES_USER: "mySuperApp2"
+    POSTGRES_USER: "mySuperApp1"
     POSTGRES_DB: "mySuperApp1" 
 
 cache:
