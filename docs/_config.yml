@@ -1,6 +1,6 @@
 title: Docker Compose Wrapper
 description: A powerful wrapper for Docker Compose with advanced features
-baseurl: ""
+baseurl: "https://your-server-support.github.io/docker-compose-wrapper/"
 url: ""
 
 # Build settings
