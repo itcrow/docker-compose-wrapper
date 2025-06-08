@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup theme-color -->
+<!-- start theme color meta headers -->
+<meta name="theme-color" content="#151515">
+<meta name="msapplication-navbutton-color" content="#151515">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- end theme color meta headers -->
+
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Chart Structure | Docker Compose Wrapper</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Chart Structure" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A powerful wrapper for Docker Compose with advanced features" />
+<meta property="og:description" content="A powerful wrapper for Docker Compose with advanced features" />
+<link rel="canonical" href="/chart-structure.html" />
+<meta property="og:url" content="/chart-structure.html" />
+<meta property="og:site_name" content="Docker Compose Wrapper" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Chart Structure" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A powerful wrapper for Docker Compose with advanced features","headline":"Chart Structure","url":"/chart-structure.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <a id="a-title" href="/">
+          <h1>Docker Compose Wrapper</h1>
+        </a>
+        <h2>A powerful wrapper for Docker Compose with advanced features</h2>
+
+        <section id="downloads">
+          
+          <a href="" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1 id="chart-structure">Chart Structure</h1>
+
+<p>The Docker Compose Wrapper uses a chart-based structure for managing configurations and deployments.</p>
+
+<h2 id="chart-directory-structure">Chart Directory Structure</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── Chart.yaml              # Chart metadata
+├── values.yaml            # Default values
+├── environments/          # Environment-specific values
+│   ├── dev.yaml
+│   ├── staging.yaml
+│   └── prod.yaml
+├── templates/             # Template files
+│   ├── docker-compose.yaml
+│   ├── networks.yaml
+│   └── _helpers.tpl
+└── releases/             # Release history
+    └── v1/
+        ├── values.yaml
+        └── docker-compose.yaml
+</code></pre></div></div>
+
+<h2 id="chartyaml">Chart.yaml</h2>
+
+<p>The main chart metadata file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">myapp</span>
+<span class="na">version</span><span class="pi">:</span> <span class="s">1.0.0</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">My Application Chart</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">application</span>
+</code></pre></div></div>
+
+<h2 id="values-structure">Values Structure</h2>
+
+<h3 id="default-values-valuesyaml">Default Values (values.yaml)</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">projectName</span><span class="pi">:</span> <span class="s">myapp</span>
+  <span class="na">environment</span><span class="pi">:</span> <span class="s">development</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:latest</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8080:80"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">NODE_ENV=development</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./data:/app/data</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">frontend</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">2</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">5</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">10</span>
+
+  <span class="na">api</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/api:latest</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">3000:3000"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">DB_HOST=db</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">frontend</span>
+      <span class="pi">-</span> <span class="s">backend</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">2</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">5</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">10</span>
+
+  <span class="na">db</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:13</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">POSTGRES_DB=myapp</span>
+      <span class="pi">-</span> <span class="s">POSTGRES_USER=myapp</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">db_data:/var/lib/postgresql/data</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">backend</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">frontend</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">bridge</span>
+  <span class="na">backend</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">bridge</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">db_data</span><span class="pi">:</span>
+</code></pre></div></div>
+
+<h3 id="environment-specific-values">Environment-specific Values</h3>
+
+<p>Example for production (environments/prod.yaml):</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">environment</span><span class="pi">:</span> <span class="s">production</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:prod</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">10</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">30</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">NODE_ENV=production</span>
+
+  <span class="na">api</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/api:prod</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">10</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">30</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">NODE_ENV=production</span>
+</code></pre></div></div>
+
+<h2 id="template-files">Template Files</h2>
+
+<h3 id="docker-composeyaml">docker-compose.yaml</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3.8'</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> 
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> 
+    <span class="na">ports</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+    <span class="na">networks</span><span class="pi">:</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+</code></pre></div></div>
+
+<h3 id="_helperstpl">_helpers.tpl</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+
+</code></pre></div></div>
+
+<h2 id="value-precedence">Value Precedence</h2>
+
+<p>Values are merged in the following order (highest to lowest precedence):</p>
+
+<ol>
+  <li>Command-line arguments</li>
+  <li>Environment-specific values</li>
+  <li>Default values from values.yaml</li>
+  <li>Chart defaults</li>
+</ol>
+
+<h2 id="release-management">Release Management</h2>
+
+<p>Each release is stored in the <code class="language-plaintext highlighter-rouge">releases</code> directory with:</p>
+<ul>
+  <li>Versioned values</li>
+  <li>Rendered templates</li>
+  <li>Release metadata</li>
+</ul>
+
+<p>Example release structure:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>releases/
+└── v1/
+    ├── values.yaml
+    ├── docker-compose.yaml
+    └── metadata.yaml
+</code></pre></div></div>
+
+<h2 id="best-practices">Best Practices</h2>
+
+<ol>
+  <li><strong>Value Organization</strong>
+    <ul>
+      <li>Keep global values at the root level</li>
+      <li>Group service-specific values under <code class="language-plaintext highlighter-rouge">services</code></li>
+      <li>Use environment-specific overrides for differences</li>
+    </ul>
+  </li>
+  <li><strong>Template Usage</strong>
+    <ul>
+      <li>Use helper templates for common patterns</li>
+      <li>Keep templates DRY (Don’t Repeat Yourself)</li>
+      <li>Use conditional rendering for optional features</li>
+    </ul>
+  </li>
+  <li><strong>Environment Management</strong>
+    <ul>
+      <li>Keep environment-specific changes minimal</li>
+      <li>Use environment variables for sensitive data</li>
+      <li>Document environment-specific requirements</li>
+    </ul>
+  </li>
+  <li><strong>Release Management</strong>
+    <ul>
+      <li>Version all releases</li>
+      <li>Keep release history for rollbacks</li>
+      <li>Document release changes</li>
+    </ul>
+  </li>
+</ol>
+
+      </section>
+    </div>
+  </body>
+</html>

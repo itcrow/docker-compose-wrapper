@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup theme-color -->
+<!-- start theme color meta headers -->
+<meta name="theme-color" content="#151515">
+<meta name="msapplication-navbutton-color" content="#151515">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- end theme color meta headers -->
+
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Code Structure | Docker Compose Wrapper</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Code Structure" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A powerful wrapper for Docker Compose with advanced features" />
+<meta property="og:description" content="A powerful wrapper for Docker Compose with advanced features" />
+<link rel="canonical" href="/code-structure.html" />
+<meta property="og:url" content="/code-structure.html" />
+<meta property="og:site_name" content="Docker Compose Wrapper" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Code Structure" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A powerful wrapper for Docker Compose with advanced features","headline":"Code Structure","url":"/code-structure.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <a id="a-title" href="/">
+          <h1>Docker Compose Wrapper</h1>
+        </a>
+        <h2>A powerful wrapper for Docker Compose with advanced features</h2>
+
+        <section id="downloads">
+          
+          <a href="" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1 id="code-structure">Code Structure</h1>
+
+<p>The Docker Compose Wrapper is organized into several key components:</p>
+
+<h2 id="directory-structure">Directory Structure</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── cmd/
+│   └── compose-wrapper/    # Main application entry point
+├── internal/
+│   ├── app/               # Core application logic
+│   ├── chart/             # Chart management
+│   ├── template/          # Template processing
+│   └── values/            # Values management
+├── pkg/
+│   └── utils/             # Shared utilities
+└── docs/                  # Documentation
+</code></pre></div></div>
+
+<h2 id="key-components">Key Components</h2>
+
+<h3 id="command-line-interface-cmdcompose-wrapper">Command Line Interface (<code class="language-plaintext highlighter-rouge">cmd/compose-wrapper/</code>)</h3>
+
+<p>The main entry point for the application, handling command-line arguments and routing to appropriate handlers.</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// main.go</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">// Parse command line arguments</span>
+    <span class="c">// Initialize application</span>
+    <span class="c">// Execute commands</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="core-application-logic-internalapp">Core Application Logic (<code class="language-plaintext highlighter-rouge">internal/app/</code>)</h3>
+
+<p>Contains the main business logic for:</p>
+<ul>
+  <li>Service management</li>
+  <li>Rolling updates</li>
+  <li>Configuration processing</li>
+  <li>Command execution</li>
+</ul>
+
+<p>Key files:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">commands.go</code>: Command implementations</li>
+  <li><code class="language-plaintext highlighter-rouge">rolling.go</code>: Rolling update logic</li>
+  <li><code class="language-plaintext highlighter-rouge">config.go</code>: Configuration management</li>
+</ul>
+
+<h3 id="chart-management-internalchart">Chart Management (<code class="language-plaintext highlighter-rouge">internal/chart/</code>)</h3>
+
+<p>Handles chart-related operations:</p>
+<ul>
+  <li>Chart loading and validation</li>
+  <li>Template processing</li>
+  <li>Values merging</li>
+  <li>Release management</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// chart.go</span>
+<span class="k">type</span> <span class="n">Chart</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Name</span>       <span class="kt">string</span>
+    <span class="n">Version</span>    <span class="kt">string</span>
+    <span class="n">Templates</span>  <span class="p">[]</span><span class="n">Template</span>
+    <span class="n">Values</span>     <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="template-processing-internaltemplate">Template Processing (<code class="language-plaintext highlighter-rouge">internal/template/</code>)</h3>
+
+<p>Manages template rendering and processing:</p>
+<ul>
+  <li>Template loading</li>
+  <li>Variable substitution</li>
+  <li>Environment-specific overrides</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// template.go</span>
+<span class="k">type</span> <span class="n">Template</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Name</span>     <span class="kt">string</span>
+    <span class="n">Content</span>  <span class="kt">string</span>
+    <span class="n">Values</span>   <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="values-management-internalvalues">Values Management (<code class="language-plaintext highlighter-rouge">internal/values/</code>)</h3>
+
+<p>Handles configuration values:</p>
+<ul>
+  <li>Default values</li>
+  <li>Environment-specific values</li>
+  <li>Value merging and precedence</li>
+  <li>Validation</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// values.go</span>
+<span class="k">type</span> <span class="n">Values</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Global</span>    <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span>
+    <span class="n">Services</span>  <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="n">Service</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="key-interfaces">Key Interfaces</h2>
+
+<h3 id="service-interface">Service Interface</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Service</span> <span class="k">interface</span> <span class="p">{</span>
+    <span class="n">Start</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="n">Stop</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="n">Restart</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="n">Scale</span><span class="p">(</span><span class="n">replicas</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span>
+    <span class="n">RollingUpdate</span><span class="p">(</span><span class="n">config</span> <span class="n">RollingUpdateConfig</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="chart-interface">Chart Interface</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Chart</span> <span class="k">interface</span> <span class="p">{</span>
+    <span class="n">Load</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="n">Validate</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="n">Render</span><span class="p">()</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="n">GetValues</span><span class="p">()</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p>The application uses a consistent error handling approach:</p>
+<ul>
+  <li>Custom error types for different scenarios</li>
+  <li>Detailed error messages</li>
+  <li>Proper error wrapping</li>
+  <li>Context preservation</li>
+</ul>
+
+<h2 id="testing">Testing</h2>
+
+<p>The codebase includes:</p>
+<ul>
+  <li>Unit tests for core functionality</li>
+  <li>Integration tests for complex operations</li>
+  <li>Mock implementations for testing</li>
+  <li>Test utilities and helpers</li>
+</ul>
+
+      </section>
+    </div>
+  </body>
+</html>
