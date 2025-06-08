@@ -1,7 +1,7 @@
 title: Docker Compose Wrapper
 description: A powerful wrapper for Docker Compose with advanced features
-baseurl: "https://your-server-support.github.io/docker-compose-wrapper/"
-url: "https://your-server-support.github.io/docker-compose-wrapper/"
+baseurl: "/docker-compose-wrapper/"
+url: "https://your-server-support.github.io"
 
 # Build settings
 markdown: kramdown
