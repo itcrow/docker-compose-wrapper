@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup theme-color -->
+<!-- start theme color meta headers -->
+<meta name="theme-color" content="#151515">
+<meta name="msapplication-navbutton-color" content="#151515">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- end theme color meta headers -->
+
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Installation | Docker Compose Wrapper</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Installation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A powerful wrapper for Docker Compose with advanced features" />
+<meta property="og:description" content="A powerful wrapper for Docker Compose with advanced features" />
+<link rel="canonical" href="http://localhost:4000/installation.html" />
+<meta property="og:url" content="http://localhost:4000/installation.html" />
+<meta property="og:site_name" content="Docker Compose Wrapper" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Installation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A powerful wrapper for Docker Compose with advanced features","headline":"Installation","url":"http://localhost:4000/installation.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <a id="a-title" href="/">
+          <h1>Docker Compose Wrapper</h1>
+        </a>
+        <h2>A powerful wrapper for Docker Compose with advanced features</h2>
+
+        <section id="downloads">
+          
+          <a href="" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1 id="installation-guide">Installation Guide</h1>
+
+<p>This guide will help you install and set up the Docker Compose Wrapper.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>Docker Engine (version 20.10.0 or later)</li>
+  <li>Docker Compose (version 2.0.0 or later)</li>
+  <li>Go (version 1.21 or later)</li>
+</ul>
+
+<h2 id="installation-methods">Installation Methods</h2>
+
+<h3 id="1-using-go-install">1. Using Go Install</h3>
+
+<p>The simplest way to install the wrapper:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go <span class="nb">install </span>github.com/your-server-support/docker-compose-wrapper/cmd/compose-wrapper@latest
+</code></pre></div></div>
+
+<p>This will install the <code class="language-plaintext highlighter-rouge">dcw</code> command in your <code class="language-plaintext highlighter-rouge">$GOPATH/bin</code> directory.</p>
+
+<h3 id="2-building-from-source">2. Building from Source</h3>
+
+<p>Clone the repository and build:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Clone the repository</span>
+git clone https://github.com/your-server-support/docker-compose-wrapper.git
+<span class="nb">cd </span>docker-compose-wrapper
+
+<span class="c"># Build the binary</span>
+go build <span class="nt">-o</span> dcw cmd/compose-wrapper/main.go
+
+<span class="c"># Move to a directory in your PATH</span>
+<span class="nb">sudo mv </span>dcw /usr/local/bin/
+</code></pre></div></div>
+
+<h3 id="3-using-package-managers">3. Using Package Managers</h3>
+
+<h4 id="fedorarhel">Fedora/RHEL</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add the repository</span>
+<span class="nb">sudo </span>dnf config-manager <span class="nt">--add-repo</span> https://your-server-support.github.io/docker-compose-wrapper/fedora/docker-compose-wrapper.repo
+
+<span class="c"># Install the package</span>
+<span class="nb">sudo </span>dnf <span class="nb">install </span>docker-compose-wrapper
+</code></pre></div></div>
+
+<h4 id="ubuntudebian">Ubuntu/Debian</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add the repository</span>
+curl <span class="nt">-fsSL</span> https://your-server-support.github.io/docker-compose-wrapper/ubuntu/gpg | <span class="nb">sudo </span>gpg <span class="nt">--dearmor</span> <span class="nt">-o</span> /usr/share/keyrings/docker-compose-wrapper-archive-keyring.gpg
+<span class="nb">echo</span> <span class="s2">"deb [signed-by=/usr/share/keyrings/docker-compose-wrapper-archive-keyring.gpg] https://your-server-support.github.io/docker-compose-wrapper/ubuntu stable main"</span> | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/docker-compose-wrapper.list
+
+<span class="c"># Install the package</span>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-compose-wrapper
+</code></pre></div></div>
+
+<h2 id="verification">Verification</h2>
+
+<p>Verify the installation:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check version</span>
+dcw version
+
+<span class="c"># Check help</span>
+dcw <span class="nt">--help</span>
+</code></pre></div></div>
+
+<h2 id="configuration">Configuration</h2>
+
+<h3 id="1-create-project-structure">1. Create Project Structure</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir </span>myapp
+<span class="nb">cd </span>myapp
+
+<span class="c"># Create basic structure</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> environments templates
+</code></pre></div></div>
+
+<h3 id="2-create-configuration-files">2. Create Configuration Files</h3>
+
+<p>Create <code class="language-plaintext highlighter-rouge">Chart.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">myapp</span>
+<span class="na">version</span><span class="pi">:</span> <span class="s">1.0.0</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">My Application Chart</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">application</span>
+</code></pre></div></div>
+
+<p>Create <code class="language-plaintext highlighter-rouge">values.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">projectName</span><span class="pi">:</span> <span class="s">myapp</span>
+  <span class="na">environment</span><span class="pi">:</span> <span class="s">development</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:latest</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+</code></pre></div></div>
+
+<h3 id="3-environment-specific-configuration">3. Environment-specific Configuration</h3>
+
+<p>Create <code class="language-plaintext highlighter-rouge">environments/dev.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">environment</span><span class="pi">:</span> <span class="s">development</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:dev</span>
+</code></pre></div></div>
+
+<h2 id="post-installation">Post-Installation</h2>
+
+<h3 id="1-set-up-shell-completion">1. Set Up Shell Completion</h3>
+
+<h4 id="bash">Bash</h4>
+
+<p>Add to <code class="language-plaintext highlighter-rouge">~/.bashrc</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> &lt;<span class="o">(</span>dcw completion bash<span class="o">)</span>
+</code></pre></div></div>
+
+<h4 id="zsh">Zsh</h4>
+
+<p>Add to <code class="language-plaintext highlighter-rouge">~/.zshrc</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> &lt;<span class="o">(</span>dcw completion zsh<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="2-configure-docker">2. Configure Docker</h3>
+
+<p>Ensure Docker is running and your user has the necessary permissions:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add user to docker group</span>
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>
+
+<span class="c"># Verify Docker access</span>
+docker ps
+</code></pre></div></div>
+
+<h3 id="3-test-installation">3. Test Installation</h3>
+
+<p>Create a test service:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a simple service</span>
+<span class="nb">cat</span> <span class="o">&gt;</span> docker-compose.yaml <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+version: '3.8'
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+</span><span class="no">EOF
+
+</span><span class="c"># Start the service</span>
+dcw up <span class="nt">-d</span>
+</code></pre></div></div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="common-issues">Common Issues</h3>
+
+<ol>
+  <li><strong>Command Not Found</strong>
+    <ul>
+      <li>Ensure <code class="language-plaintext highlighter-rouge">$GOPATH/bin</code> is in your PATH</li>
+      <li>Verify the binary was installed correctly</li>
+      <li>Check file permissions</li>
+    </ul>
+  </li>
+  <li><strong>Docker Permission Issues</strong>
+    <ul>
+      <li>Verify Docker daemon is running</li>
+      <li>Check user group membership</li>
+      <li>Review Docker socket permissions</li>
+    </ul>
+  </li>
+  <li><strong>Configuration Errors</strong>
+    <ul>
+      <li>Validate YAML syntax</li>
+      <li>Check file permissions</li>
+      <li>Verify environment variables</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="debug-commands">Debug Commands</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check installation</span>
+which dcw
+dcw version
+
+<span class="c"># Check Docker</span>
+docker version
+docker compose version
+
+<span class="c"># Check configuration</span>
+dcw config
+</code></pre></div></div>
+
+<h2 id="updating">Updating</h2>
+
+<h3 id="using-go-install">Using Go Install</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go <span class="nb">install </span>github.com/your-server-support/docker-compose-wrapper/cmd/compose-wrapper@latest
+</code></pre></div></div>
+
+<h3 id="using-package-managers">Using Package Managers</h3>
+
+<h4 id="fedorarhel-1">Fedora/RHEL</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>dnf update docker-compose-wrapper
+</code></pre></div></div>
+
+<h4 id="ubuntudebian-1">Ubuntu/Debian</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get upgrade docker-compose-wrapper
+</code></pre></div></div>
+
+<h2 id="uninstallation">Uninstallation</h2>
+
+<h3 id="using-go-install-1">Using Go Install</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">rm</span> <span class="si">$(</span>which dcw<span class="si">)</span>
+</code></pre></div></div>
+
+<h3 id="using-package-managers-1">Using Package Managers</h3>
+
+<h4 id="fedorarhel-2">Fedora/RHEL</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>dnf remove docker-compose-wrapper
+</code></pre></div></div>
+
+<h4 id="ubuntudebian-2">Ubuntu/Debian</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get remove docker-compose-wrapper
+</code></pre></div></div>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ol>
+  <li><a href="configuration">Configuration Guide</a></li>
+  <li><a href="rolling-updates">Rolling Updates</a></li>
+  <li><a href="code-structure">Code Structure</a></li>
+</ol>
+
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup theme-color -->
+<!-- start theme color meta headers -->
+<meta name="theme-color" content="#151515">
+<meta name="msapplication-navbutton-color" content="#151515">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- end theme color meta headers -->
+
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Advanced Features | Docker Compose Wrapper</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Advanced Features" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A powerful wrapper for Docker Compose with advanced features" />
+<meta property="og:description" content="A powerful wrapper for Docker Compose with advanced features" />
+<link rel="canonical" href="http://localhost:4000/advanced-features.html" />
+<meta property="og:url" content="http://localhost:4000/advanced-features.html" />
+<meta property="og:site_name" content="Docker Compose Wrapper" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Advanced Features" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A powerful wrapper for Docker Compose with advanced features","headline":"Advanced Features","url":"http://localhost:4000/advanced-features.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <a id="a-title" href="/">
+          <h1>Docker Compose Wrapper</h1>
+        </a>
+        <h2>A powerful wrapper for Docker Compose with advanced features</h2>
+
+        <section id="downloads">
+          
+          <a href="" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1 id="advanced-features">Advanced Features</h1>
+
+<p>This guide covers advanced features and capabilities of the Docker Compose Wrapper.</p>
+
+<h2 id="custom-health-checks">Custom Health Checks</h2>
+
+<p>Configure custom health checks for your services:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">healthcheck</span><span class="pi">:</span>
+      <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">]</span>
+      <span class="na">interval</span><span class="pi">:</span> <span class="s">30s</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="s">10s</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">3</span>
+      <span class="na">start_period</span><span class="pi">:</span> <span class="s">40s</span>
+</code></pre></div></div>
+
+<h2 id="resource-management">Resource Management</h2>
+
+<h3 id="cpu-and-memory-limits">CPU and Memory Limits</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">limits</span><span class="pi">:</span>
+          <span class="na">cpus</span><span class="pi">:</span> <span class="s1">'</span><span class="s">0.50'</span>
+          <span class="na">memory</span><span class="pi">:</span> <span class="s">512M</span>
+        <span class="na">reservations</span><span class="pi">:</span>
+          <span class="na">cpus</span><span class="pi">:</span> <span class="s1">'</span><span class="s">0.25'</span>
+          <span class="na">memory</span><span class="pi">:</span> <span class="s">256M</span>
+</code></pre></div></div>
+
+<h3 id="gpu-support">GPU Support</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">ml</span><span class="pi">:</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">reservations</span><span class="pi">:</span>
+          <span class="na">devices</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">driver</span><span class="pi">:</span> <span class="s">nvidia</span>
+              <span class="na">count</span><span class="pi">:</span> <span class="m">1</span>
+              <span class="na">capabilities</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">gpu</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<h2 id="advanced-networking">Advanced Networking</h2>
+
+<h3 id="custom-networks">Custom Networks</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">networks</span><span class="pi">:</span>
+  <span class="na">frontend</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">bridge</span>
+    <span class="na">ipam</span><span class="pi">:</span>
+      <span class="na">driver</span><span class="pi">:</span> <span class="s">default</span>
+      <span class="na">config</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">subnet</span><span class="pi">:</span> <span class="s">172.28.0.0/16</span>
+  <span class="na">backend</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">bridge</span>
+    <span class="na">internal</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">ipam</span><span class="pi">:</span>
+      <span class="na">driver</span><span class="pi">:</span> <span class="s">default</span>
+      <span class="na">config</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">subnet</span><span class="pi">:</span> <span class="s">172.29.0.0/16</span>
+</code></pre></div></div>
+
+<h3 id="network-aliases">Network Aliases</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">frontend</span><span class="pi">:</span>
+        <span class="na">aliases</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">web.local</span>
+          <span class="pi">-</span> <span class="s">www.local</span>
+</code></pre></div></div>
+
+<h2 id="volume-management">Volume Management</h2>
+
+<h3 id="named-volumes">Named Volumes</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">db_data</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">local</span>
+    <span class="na">driver_opts</span><span class="pi">:</span>
+      <span class="na">type</span><span class="pi">:</span> <span class="s">none</span>
+      <span class="na">o</span><span class="pi">:</span> <span class="s">bind</span>
+      <span class="na">device</span><span class="pi">:</span> <span class="s">/path/to/data</span>
+</code></pre></div></div>
+
+<h3 id="volume-templates">Volume Templates</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">${VOLUME_PREFIX:-/var/lib}/web/data:/app/data</span>
+      <span class="pi">-</span> <span class="s">${CONFIG_PATH:-./config}:/app/config</span>
+</code></pre></div></div>
+
+<h2 id="secrets-management">Secrets Management</h2>
+
+<h3 id="docker-secrets">Docker Secrets</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">secrets</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">db_password</span>
+      <span class="pi">-</span> <span class="s">api_key</span>
+
+<span class="na">secrets</span><span class="pi">:</span>
+  <span class="na">db_password</span><span class="pi">:</span>
+    <span class="na">file</span><span class="pi">:</span> <span class="s">./secrets/db_password.txt</span>
+  <span class="na">api_key</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<h3 id="environment-variables">Environment Variables</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">DB_PASSWORD=${DB_PASSWORD}</span>
+      <span class="pi">-</span> <span class="s">API_KEY=${API_KEY}</span>
+</code></pre></div></div>
+
+<h2 id="advanced-templates">Advanced Templates</h2>
+
+<h3 id="conditional-rendering">Conditional Rendering</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">443:443"</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./ssl:/etc/ssl</span>
+</code></pre></div></div>
+
+<h3 id="loops-and-ranges">Loops and Ranges</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> 
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> 
+</code></pre></div></div>
+
+<h2 id="custom-plugins">Custom Plugins</h2>
+
+<h3 id="plugin-structure">Plugin Structure</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Plugin</span> <span class="k">interface</span> <span class="p">{</span>
+    <span class="n">Name</span><span class="p">()</span> <span class="kt">string</span>
+    <span class="n">Execute</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="example-plugin">Example Plugin</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">HealthCheckPlugin</span> <span class="k">struct</span><span class="p">{}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">HealthCheckPlugin</span><span class="p">)</span> <span class="n">Name</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s">"health-check"</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">HealthCheckPlugin</span><span class="p">)</span> <span class="n">Execute</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Plugin implementation</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="release-management">Release Management</h2>
+
+<h3 id="version-control">Version Control</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Chart.yaml</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">myapp</span>
+<span class="na">version</span><span class="pi">:</span> <span class="s">1.0.0</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">My Application Chart</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">application</span>
+</code></pre></div></div>
+
+<h3 id="release-history">Release History</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>releases/
+├── v1/
+│   ├── values.yaml
+│   └── docker-compose.yaml
+├── v2/
+│   ├── values.yaml
+│   └── docker-compose.yaml
+└── current -&gt; v2
+</code></pre></div></div>
+
+<h2 id="advanced-deployment-strategies">Advanced Deployment Strategies</h2>
+
+<h3 id="blue-green-deployment">Blue-Green Deployment</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web-blue</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:v1</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">web-green</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:v2</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">0</span>
+</code></pre></div></div>
+
+<h3 id="canary-deployments">Canary Deployments</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web-stable</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:v1</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">web-canary</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">myapp/web:v2</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+</code></pre></div></div>
+
+<h2 id="monitoring-and-logging">Monitoring and Logging</h2>
+
+<h3 id="prometheus-integration">Prometheus Integration</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">prometheus.enable=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">prometheus.port=9090"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">prometheus.path=/metrics"</span>
+</code></pre></div></div>
+
+<h3 id="log-aggregation">Log Aggregation</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">logging</span><span class="pi">:</span>
+      <span class="na">driver</span><span class="pi">:</span> <span class="s2">"</span><span class="s">json-file"</span>
+      <span class="na">options</span><span class="pi">:</span>
+        <span class="na">max-size</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10m"</span>
+        <span class="na">max-file</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3"</span>
+</code></pre></div></div>
+
+<h2 id="security-features">Security Features</h2>
+
+<h3 id="read-only-containers">Read-only Containers</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">read_only</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">tmpfs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/tmp</span>
+      <span class="pi">-</span> <span class="s">/var/run</span>
+</code></pre></div></div>
+
+<h3 id="security-profiles">Security Profiles</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">security_opt</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">no-new-privileges:true</span>
+    <span class="na">cap_drop</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">ALL</span>
+    <span class="na">cap_add</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">NET_BIND_SERVICE</span>
+</code></pre></div></div>
+
+<h2 id="best-practices">Best Practices</h2>
+
+<ol>
+  <li><strong>Resource Management</strong>
+    <ul>
+      <li>Set appropriate resource limits</li>
+      <li>Monitor resource usage</li>
+      <li>Use resource reservations</li>
+    </ul>
+  </li>
+  <li><strong>Security</strong>
+    <ul>
+      <li>Use read-only containers</li>
+      <li>Drop unnecessary capabilities</li>
+      <li>Implement security profiles</li>
+    </ul>
+  </li>
+  <li><strong>Networking</strong>
+    <ul>
+      <li>Use custom networks</li>
+      <li>Implement network policies</li>
+      <li>Use network aliases</li>
+    </ul>
+  </li>
+  <li><strong>Storage</strong>
+    <ul>
+      <li>Use named volumes</li>
+      <li>Implement backup strategies</li>
+      <li>Monitor storage usage</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="advanced-debugging">Advanced Debugging</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check container details</span>
+docker inspect &lt;container-id&gt;
+
+<span class="c"># View container logs with timestamps</span>
+docker logs <span class="nt">-t</span> &lt;container-id&gt;
+
+<span class="c"># Check resource usage</span>
+docker stats &lt;container-id&gt;
+</code></pre></div></div>
+
+<h3 id="performance-tuning">Performance Tuning</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Adjust container limits</span>
+dcw up <span class="nt">--cpus</span> 2 <span class="nt">--memory</span> 1G
+
+<span class="c"># Monitor performance</span>
+dcw stats
+</code></pre></div></div>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ol>
+  <li><a href="basic-usage">Basic Usage</a></li>
+  <li><a href="configuration">Configuration Guide</a></li>
+  <li><a href="rolling-updates">Rolling Updates</a></li>
+</ol>
+
+      </section>
+    </div>
+  </body>
+</html>

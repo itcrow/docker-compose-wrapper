@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup theme-color -->
+<!-- start theme color meta headers -->
+<meta name="theme-color" content="#151515">
+<meta name="msapplication-navbutton-color" content="#151515">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- end theme color meta headers -->
+
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Rolling Updates | Docker Compose Wrapper</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Rolling Updates" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A powerful wrapper for Docker Compose with advanced features" />
+<meta property="og:description" content="A powerful wrapper for Docker Compose with advanced features" />
+<link rel="canonical" href="http://localhost:4000/rolling-updates.html" />
+<meta property="og:url" content="http://localhost:4000/rolling-updates.html" />
+<meta property="og:site_name" content="Docker Compose Wrapper" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Rolling Updates" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"A powerful wrapper for Docker Compose with advanced features","headline":"Rolling Updates","url":"http://localhost:4000/rolling-updates.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <a id="a-title" href="/">
+          <h1>Docker Compose Wrapper</h1>
+        </a>
+        <h2>A powerful wrapper for Docker Compose with advanced features</h2>
+
+        <section id="downloads">
+          
+          <a href="" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1 id="rolling-updates">Rolling Updates</h1>
+
+<p>The Docker Compose Wrapper provides a powerful rolling update mechanism that ensures zero-downtime deployments.</p>
+
+<h2 id="how-rolling-updates-work">How Rolling Updates Work</h2>
+
+<p>The rolling update process follows these steps:</p>
+
+<ol>
+  <li><strong>Scale Up</strong>: Double the number of replicas</li>
+  <li><strong>Wait for New Containers</strong>: Ensure new containers are running</li>
+  <li><strong>Remove Old Containers</strong>: Stop and remove old containers</li>
+  <li><strong>Scale Down</strong>: Return to the desired number of replicas</li>
+</ol>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>Configure rolling updates in your values file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>        <span class="c1"># Number of replicas to maintain</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">10</span>     <span class="c1"># Number of attempts to wait for new containers</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">30</span>  <span class="c1"># Time between retry attempts in seconds</span>
+</code></pre></div></div>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="basic-rolling-update">Basic Rolling Update</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dcw rolling-update web
+</code></pre></div></div>
+
+<h3 id="rolling-update-with-environment">Rolling Update with Environment</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dcw rolling-update <span class="nt">-e</span> prod web
+</code></pre></div></div>
+
+<h3 id="custom-configuration">Custom Configuration</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dcw rolling-update <span class="nt">--replicas</span> 3 <span class="nt">--retry-count</span> 10 <span class="nt">--retry-interval</span> 30 web
+</code></pre></div></div>
+
+<h2 id="process-details">Process Details</h2>
+
+<h3 id="1-scale-up">1. Scale Up</h3>
+
+<p>The service is scaled to double the desired replicas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker compose up <span class="nt">-d</span> <span class="nt">--scale</span> <span class="nv">web</span><span class="o">=</span>6
+</code></pre></div></div>
+
+<h3 id="2-wait-for-new-containers">2. Wait for New Containers</h3>
+
+<p>The system waits for new containers to start:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Wait for new containers</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">retryCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">retryInterval</span><span class="p">)</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+    <span class="c">// Check if new containers are running</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="3-remove-old-containers">3. Remove Old Containers</h3>
+
+<p>Old containers are stopped and removed:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker stop &lt;old-container-id&gt;
+docker <span class="nb">rm</span> &lt;old-container-id&gt;
+</code></pre></div></div>
+
+<h3 id="4-scale-down">4. Scale Down</h3>
+
+<p>The service is scaled back to the desired number of replicas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker compose up <span class="nt">-d</span> <span class="nt">--scale</span> <span class="nv">web</span><span class="o">=</span>3
+</code></pre></div></div>
+
+<h2 id="best-practices">Best Practices</h2>
+
+<ol>
+  <li><strong>Replica Count</strong>
+    <ul>
+      <li>Set appropriate replica counts for your workload</li>
+      <li>Consider resource constraints</li>
+      <li>Plan for peak loads</li>
+    </ul>
+  </li>
+  <li><strong>Retry Configuration</strong>
+    <ul>
+      <li>Set reasonable retry counts and intervals</li>
+      <li>Consider container startup time</li>
+      <li>Account for network latency</li>
+    </ul>
+  </li>
+  <li><strong>Monitoring</strong>
+    <ul>
+      <li>Monitor container health during updates</li>
+      <li>Watch for resource usage spikes</li>
+      <li>Check application logs</li>
+    </ul>
+  </li>
+  <li><strong>Rollback Plan</strong>
+    <ul>
+      <li>Have a rollback strategy ready</li>
+      <li>Test rollback procedures</li>
+      <li>Keep previous versions available</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="common-scenarios">Common Scenarios</h2>
+
+<h3 id="high-availability-setup">High Availability Setup</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">15</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">20</span>
+</code></pre></div></div>
+
+<h3 id="development-environment">Development Environment</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">2</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">5</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">10</span>
+</code></pre></div></div>
+
+<h3 id="production-environment">Production Environment</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">5</span>
+    <span class="na">rollingUpdate</span><span class="pi">:</span>
+      <span class="na">replicas</span><span class="pi">:</span> <span class="m">5</span>
+      <span class="na">retryCount</span><span class="pi">:</span> <span class="m">20</span>
+      <span class="na">retryInterval</span><span class="pi">:</span> <span class="m">30</span>
+</code></pre></div></div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="common-issues">Common Issues</h3>
+
+<ol>
+  <li><strong>Container Startup Failures</strong>
+    <ul>
+      <li>Check container logs</li>
+      <li>Verify resource constraints</li>
+      <li>Review environment variables</li>
+    </ul>
+  </li>
+  <li><strong>Update Timeouts</strong>
+    <ul>
+      <li>Increase retry count</li>
+      <li>Adjust retry interval</li>
+      <li>Check network connectivity</li>
+    </ul>
+  </li>
+  <li><strong>Resource Exhaustion</strong>
+    <ul>
+      <li>Monitor system resources</li>
+      <li>Adjust replica counts</li>
+      <li>Consider resource limits</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="debug-commands">Debug Commands</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check container status</span>
+docker ps <span class="nt">-a</span>
+
+<span class="c"># View container logs</span>
+docker logs &lt;container-id&gt;
+
+<span class="c"># Check service status</span>
+dcw ps
+
+<span class="c"># View service logs</span>
+dcw logs web
+</code></pre></div></div>
+
+<h2 id="advanced-topics">Advanced Topics</h2>
+
+<h3 id="custom-health-checks">Custom Health Checks</h3>
+
+<p>Add health checks to your service configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">healthcheck</span><span class="pi">:</span>
+      <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">]</span>
+      <span class="na">interval</span><span class="pi">:</span> <span class="s">30s</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="s">10s</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">3</span>
+</code></pre></div></div>
+
+<h3 id="graceful-shutdown">Graceful Shutdown</h3>
+
+<p>Configure graceful shutdown periods:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">stop_grace_period</span><span class="pi">:</span> <span class="s">30s</span>
+</code></pre></div></div>
+
+<h3 id="resource-limits">Resource Limits</h3>
+
+<p>Set resource constraints:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">deploy</span><span class="pi">:</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">limits</span><span class="pi">:</span>
+          <span class="na">cpus</span><span class="pi">:</span> <span class="s1">'</span><span class="s">0.50'</span>
+          <span class="na">memory</span><span class="pi">:</span> <span class="s">512M</span>
+        <span class="na">reservations</span><span class="pi">:</span>
+          <span class="na">cpus</span><span class="pi">:</span> <span class="s1">'</span><span class="s">0.25'</span>
+          <span class="na">memory</span><span class="pi">:</span> <span class="s">256M</span>
+</code></pre></div></div>
+
+      </section>
+    </div>
+  </body>
+</html>
