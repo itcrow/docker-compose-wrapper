@@ -1,6 +1,137 @@
-# Docker Compose Wrapper (Go Edition)
+# Docker Compose Wrapper
 
-A powerful wrapper for Docker Compose that provides template-based configuration management, versioned releases, rollback, and automated network management.
+A wrapper for Docker Compose that adds support for:
+- Rolling updates
+- Environment-specific configurations
+- Template-based configuration
+- Values management
+
+## Installation
+
+```bash
+go install github.com/your-server-support/docker-compose-wrapper/cmd/compose-wrapper@latest
+```
+
+## Usage
+
+The wrapper provides a command-line interface similar to Docker Compose, with additional features:
+
+```bash
+# Start services
+dcw up
+
+# Start services with specific environment
+dcw up -e prod
+
+# Start specific service
+dcw up web
+
+# Start specific service with environment
+dcw up -e prod web
+
+# Rolling update for a service
+dcw rolling-update web
+
+# Rolling update with specific environment
+dcw rolling-update -e prod web
+
+# Rolling update with custom configuration
+dcw rolling-update --replicas 3 --retry-count 10 --retry-interval 30 web
+```
+
+## Configuration
+
+### Environment-specific Configuration
+
+Create environment-specific configuration files in the `environments` directory:
+
+```yaml
+# environments/prod.yaml
+global:
+  projectName: myapp
+  environment: production
+
+services:
+  web:
+    image: myapp/web:latest
+    replicas: 3
+    rollingUpdate:
+      replicas: 3
+      retryCount: 10
+      retryInterval: 30
+```
+
+### Template-based Configuration
+
+Use Go templates in your configuration files:
+
+```yaml
+# docker-compose.yaml
+services:
+  web:
+    image: {{ .Values.services.web.image }}
+    ports:
+      - "{{ .Values.services.web.port }}:80"
+```
+
+### Values Management
+
+Values can be defined in multiple places with the following precedence (highest to lowest):
+
+1. Command-line arguments
+2. Environment-specific configuration
+3. Default values
+
+Example values file:
+
+```yaml
+# values.yaml
+global:
+  projectName: myapp
+  environment: development
+
+services:
+  web:
+    image: myapp/web:dev
+    port: 8080
+    replicas: 1
+    rollingUpdate:
+      replicas: 2
+      retryCount: 5
+      retryInterval: 10
+```
+
+## Rolling Updates
+
+The rolling update feature ensures zero-downtime deployments by:
+
+1. Scaling up the service to double the desired replicas
+2. Waiting for new containers to start
+3. Removing old containers
+4. Scaling back down to the desired number of replicas
+
+Configuration options:
+- `replicas`: Number of replicas to maintain
+- `retryCount`: Number of attempts to wait for new containers
+- `retryInterval`: Time between retry attempts in seconds
+
+## Development
+
+### Building
+
+```bash
+go build -o dcw cmd/compose-wrapper/main.go
+```
+
+### Testing
+
+```bash
+go test ./...
+```
+
+## License
+
+MIT 
 
 ## Features
 
@@ -81,7 +212,7 @@ This convention makes it clear which files are templates and what their final ou
 Generates a new release if the config changes, or reuses the latest if not. Runs Docker Compose with the generated files.
 
 ```
-./compose-wrapper up -d
+dcw up -d
 ```
 
 > **Note:** Any value-related flags (`--set`, `--set-file`, `--set-string`, `-f`, `--values`) are handled by the wrapper and will not be forwarded to Docker Compose.
@@ -90,14 +221,14 @@ Generates a new release if the config changes, or reuses the latest if not. Runs
 Validates all generated Docker Compose files using `docker compose config`.
 
 ```
-./compose-wrapper lint
+dcw lint
 ```
 
 ### Releases
 Lists all available releases with their timestamps.
 
 ```
-./compose-wrapper releases
+dcw releases
 ```
 
 ### Rollback
@@ -105,11 +236,11 @@ Creates a new release from a previous one and runs Docker Compose from it. Suppo
 
 - Roll back to the previous release:
   ```
-  ./compose-wrapper rollback up -d
+  dcw rollback up -d
   ```
 - Roll back to a specific release:
   ```
-  ./compose-wrapper rollback v3-abcdef12 up -d
+  dcw rollback v3-abcdef12 up -d
   ```
 
 When rolling back, the wrapper will:
@@ -233,13 +364,13 @@ dependencies:
 To update dependencies:
 
 ```bash
-./compose-wrapper dependency update
+dcw dependency update
 ```
 
 To list current dependencies:
 
 ```bash
-./compose-wrapper dependency list
+dcw dependency list
 ```
 
 Dependencies are stored in the `charts/` directory and are automatically downloaded when needed.

@@ -16,7 +16,7 @@ builds:
       - goos: windows
         goarch: arm64
     main: ./cmd/compose-wrapper
-    binary: docker-compose-wrapper
+    binary: dcw
     dir: .
 
 archives:
